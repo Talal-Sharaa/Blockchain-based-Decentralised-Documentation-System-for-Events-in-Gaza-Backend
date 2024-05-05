@@ -1,8 +1,46 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/home/talalsh/decentralized-news/node_modules/@openzeppelin/contracts/access/AccessControl.sol": {
-      "lastModificationDate": 1714238118949,
+    "/home/talalsh/decentral-back/contracts/NewsPlatform.sol": {
+      "lastModificationDate": 1714869322316,
+      "contentHash": "e1d9c4c526a79d5e495bae7ba9c785d9",
+      "sourceName": "contracts/NewsPlatform.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/AccessControl.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "NewsPlatform"
+      ]
+    },
+    "/home/talalsh/decentral-back/node_modules/@openzeppelin/contracts/access/AccessControl.sol": {
+      "lastModificationDate": 1714869436165,
       "contentHash": "4c80b7fdf559a9a348e832a57d072a0b",
       "sourceName": "@openzeppelin/contracts/access/AccessControl.sol",
       "solcConfig": {
@@ -41,10 +79,10 @@
         "AccessControl"
       ]
     },
-    "/home/talalsh/decentralized-news/node_modules/@openzeppelin/contracts/utils/Context.sol": {
-      "lastModificationDate": 1714238118949,
-      "contentHash": "67bfbc07588eb8683b3fd8f6f909563e",
-      "sourceName": "@openzeppelin/contracts/utils/Context.sol",
+    "/home/talalsh/decentral-back/node_modules/@openzeppelin/contracts/access/IAccessControl.sol": {
+      "lastModificationDate": 1714869436215,
+      "contentHash": "e3a14b0714caaaa82d58fa0bc3756079",
+      "sourceName": "@openzeppelin/contracts/access/IAccessControl.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -74,11 +112,11 @@
         "^0.8.20"
       ],
       "artifacts": [
-        "Context"
+        "IAccessControl"
       ]
     },
-    "/home/talalsh/decentralized-news/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": {
-      "lastModificationDate": 1714238118952,
+    "/home/talalsh/decentral-back/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+      "lastModificationDate": 1714869436195,
       "contentHash": "6a55c353946e471d9792965d06208295",
       "sourceName": "@openzeppelin/contracts/utils/introspection/ERC165.sol",
       "solcConfig": {
@@ -115,10 +153,10 @@
         "ERC165"
       ]
     },
-    "/home/talalsh/decentralized-news/node_modules/@openzeppelin/contracts/access/IAccessControl.sol": {
-      "lastModificationDate": 1714238118956,
-      "contentHash": "e3a14b0714caaaa82d58fa0bc3756079",
-      "sourceName": "@openzeppelin/contracts/access/IAccessControl.sol",
+    "/home/talalsh/decentral-back/node_modules/@openzeppelin/contracts/utils/Context.sol": {
+      "lastModificationDate": 1714869436178,
+      "contentHash": "67bfbc07588eb8683b3fd8f6f909563e",
+      "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -148,11 +186,11 @@
         "^0.8.20"
       ],
       "artifacts": [
-        "IAccessControl"
+        "Context"
       ]
     },
-    "/home/talalsh/decentralized-news/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
-      "lastModificationDate": 1714238118959,
+    "/home/talalsh/decentral-back/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+      "lastModificationDate": 1714869436221,
       "contentHash": "de0163561b417b800d01749cbbe2147e",
       "sourceName": "@openzeppelin/contracts/utils/introspection/IERC165.sol",
       "solcConfig": {
@@ -185,44 +223,6 @@
       ],
       "artifacts": [
         "IERC165"
-      ]
-    },
-    "/home/talalsh/decentralized-news/contracts/NewsPlatform.sol": {
-      "lastModificationDate": 1714867358899,
-      "contentHash": "dbaf3973eb47e1136d4695d983e5ef45",
-      "sourceName": "contracts/NewsPlatform.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "evmVersion": "paris",
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/access/AccessControl.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "NewsPlatform"
       ]
     }
   }
