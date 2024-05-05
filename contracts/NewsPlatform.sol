@@ -102,6 +102,16 @@ function getAllPublishers() public view returns (Publisher[] memory) {
 
     return allPublishers;
 }
+function getAllArticles() public view returns (ArticleWithID[] memory) {
+    uint256 totalArticles = articleIdCounter;
+    ArticleWithID[] memory allArticles = new ArticleWithID[](totalArticles);
+
+    for (uint256 i = 1; i <= totalArticles; i++) {
+        allArticles[i - 1] = getArticle(i);
+    }
+
+    return allArticles;
+}
 function getAllArticleIds() public view returns (uint256[] memory) {
     uint256 totalArticles = articleIdCounter;
     uint256[] memory allArticleIds = new uint256[](totalArticles);
