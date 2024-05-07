@@ -281,4 +281,37 @@ function getArticlesByPublisher(address publisherAddress) public view returns (A
 
     return articlesByPublisher;
 }
+
+// Inside your NewsPlatform contract
+mapping(address => uint256[]) public userFavorites; // Maps user addresses to an array of their favorite article IDs
+
+// Function to add an article to favorites
+function addToFavorites(uint256 articleId) public {
+    require(articles[articleId].timestamp != 0, "Article does not exist");
+    userFavorites[msg.sender].push(articleId); 
+}
+
+// Function to remove an article from favorites
+function removeFromFavorites(uint256 articleId) public {
+    uint256[] storage favorites = userFavorites[msg.sender];
+    for (uint256 i = 0; i < favorites.length; i++) {
+        if (favorites[i] == articleId) {
+            favorites[i] = favorites[favorites.length - 1]; // Move the last element to the position of the deleted element
+            favorites.pop(); // Decrease the array's length by one
+            break;
+        }
+    }
+}
+// Function to retrieve a user's favorite articles
+function getFavorites() public view returns (ArticleWithID[] memory) {
+    uint256[] memory favoriteIds = userFavorites[msg.sender];
+    ArticleWithID[] memory favoriteArticles = new ArticleWithID[](favoriteIds.length);
+
+    for (uint256 i = 0; i < favoriteIds.length; i++) {
+        favoriteArticles[i] = getArticle(favoriteIds[i]);
+    }
+
+    return favoriteArticles;
+}
+
 }

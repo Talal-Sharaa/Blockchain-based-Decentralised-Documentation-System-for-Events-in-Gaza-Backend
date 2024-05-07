@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/talalsh/decentral-back/contracts/NewsPlatform.sol": {
-      "lastModificationDate": 1714875582444,
-      "contentHash": "3380c72b0973b83e797e98784d76bf0e",
+      "lastModificationDate": 1715034098283,
+      "contentHash": "83220bdcdb1be18b9f0d0611bff50303",
       "sourceName": "contracts/NewsPlatform.sol",
       "solcConfig": {
         "version": "0.8.24",
