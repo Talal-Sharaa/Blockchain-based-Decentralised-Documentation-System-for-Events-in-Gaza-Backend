@@ -52,8 +52,7 @@
     
 -   **Deployment:**
     
-    -   `truffle migrate --network sepolia`
-    
+npx hardhat run scripts/deploy.js --network sepolia    
 
 **How to Use**
 
