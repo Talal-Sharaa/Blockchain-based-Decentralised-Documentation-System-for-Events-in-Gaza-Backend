@@ -1,7 +1,8 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+
 import "@openzeppelin/contracts/access/AccessControl.sol";
-//
+
 contract NewsPlatform is AccessControl {
     bytes32 public constant PUBLISHER_ROLE = keccak256("PUBLISHER_ROLE");
 
@@ -10,37 +11,28 @@ contract NewsPlatform is AccessControl {
         _grantRole(PUBLISHER_ROLE, msg.sender);
     }
 
+    event ArticleSubmitted(address publisher, uint256 articleId);
+    event ArticleUpdated(uint256 articleId);
+
     modifier onlyPublisher() {
         require(hasRole(PUBLISHER_ROLE, msg.sender), "Caller is not a publisher");
         _;
     }
-    // ... other structs and variables ...
- struct Publisher {
+
+    struct Publisher {
         address publisherID;
         uint256 registrationTimestamp;
         int256 reputationScore;
         bool isRegistered;
     }
-    address[] public publisherAddresses;
-    struct Reader {
-        address readerID;
-    }
-    mapping(address => string) public publisherNames;
-    mapping(uint256 => Article) public articles;
-    mapping(uint256 => ArticlewithOutVersion) public articleVersionless;
-    mapping(address => Publisher) public publishers;
-    mapping(address => uint256[]) public publisherArticles; // Maps a publisher address to an array of their article IDs
-mapping(string => address) public nameToPublisherAddress;
-    mapping(address => Reader) public readers;
-    uint256 private articleIdCounter;
 
     struct ArticleVersion {
         uint256 versionNumber;
         string articleHash;
         address editorID;
-        uint256 editTimestamp; 
-            string title; // Add this field
-    string content; // And this field
+        uint256 editTimestamp;
+        string title;
+        string content;
     }
 
     struct Article {
@@ -49,25 +41,44 @@ mapping(string => address) public nameToPublisherAddress;
         uint256 timestamp;
         address publisherID;
         string articleHash;
-        mapping(uint256 => ArticleVersion) versionHistory; 
+        mapping(uint256 => ArticleVersion) versionHistory;
     }
-        struct ArticlewithOutVersion {
-            uint256 id;
+
+    struct ArticlewithOutVersion {
+        uint256 id;
         string title;
         string content;
         uint256 timestamp;
         address publisherID;
         string articleHash;
     }
-    struct ArticleWithID {
-    uint256 id;
-    string title;
-    string content;
-    uint256 timestamp;
-    address publisherID;
-    string articleHash;
-}
 
+    struct ArticleWithID {
+        uint256 id;
+        string title;
+        string content;
+        uint256 timestamp;
+        address publisherID;
+        string articleHash;
+    }
+
+    mapping(address => string) public publisherNames;
+    mapping(uint256 => Article) public articles;
+    mapping(uint256 => ArticlewithOutVersion) public articleVersionless;
+    mapping(address => Publisher) public publishers;
+    mapping(address => uint256[]) public publisherArticles;
+    mapping(string => address) public nameToPublisherAddress;
+    uint256 private articleIdCounter;
+    mapping(uint256 => uint256) public articleVersionCounts;
+
+    address[] public publisherAddresses;
+    struct Reader {
+        address readerID;
+    }
+   
+    mapping(address => Reader) public readers;
+
+   
     
     function isAdmin(address user) public view returns (bool) {
     return hasRole(DEFAULT_ADMIN_ROLE, user);
@@ -103,15 +114,16 @@ function getAllPublishers() public view returns (Publisher[] memory) {
     return allPublishers;
 }
 function getAllArticles() public view returns (ArticleWithID[] memory) {
-    uint256 totalArticles = articleIdCounter;
-    ArticleWithID[] memory allArticles = new ArticleWithID[](totalArticles);
+        uint256 totalArticles = articleIdCounter;
+        ArticleWithID[] memory allArticles = new ArticleWithID[](totalArticles);
 
-    for (uint256 i = 1; i <= totalArticles; i++) {
-        allArticles[i - 1] = getArticle(i);
+        for (uint256 i = 1; i <= totalArticles; i++) {
+            allArticles[i - 1] = getArticle(i);
+        }
+
+        return allArticles;
     }
 
-    return allArticles;
-}
 function getAllArticleIds() public view returns (uint256[] memory) {
     uint256 totalArticles = articleIdCounter;
     uint256[] memory allArticleIds = new uint256[](totalArticles);
@@ -147,14 +159,12 @@ function getAllArticleIds() public view returns (uint256[] memory) {
     grantRole(PUBLISHER_ROLE, publisherAddress);
 }
 
-function getArticlesByName(string memory name) public view returns (ArticlewithOutVersion[] memory) {
-    address publisherAddress = nameToPublisherAddress[name];
-    require(publisherAddress != address(0), "Publisher not found"); // Check if the name exists
-    return getArticlesByPublisher(publisherAddress);
-}
-    
+  function getArticlesByName(string memory name) public view returns (ArticleWithID[] memory) {
+        address publisherAddress = nameToPublisherAddress[name];
+        require(publisherAddress != address(0), "Publisher not found");
+        return getArticlesByPublisher(publisherAddress);
+    }
     // Add this state variable to your contract
-    mapping(uint256 => uint256) public articleVersionCounts;
     function submitArticle(string memory title, string memory content) public onlyPublisher {
         require(bytes(title).length > 0, "Title cannot be empty");
         require(bytes(content).length > 0, "Content cannot be empty");
@@ -194,42 +204,56 @@ function getArticlesByName(string memory name) public view returns (ArticlewithO
             publisherID: msg.sender,
             articleHash: bytes32ToString(articleHash)
         });
+                emit ArticleSubmitted(msg.sender, articleId);
+
     }
 
+function updateArticle(uint256 articleId, string memory newTitle, string memory newContent) public {
+    // Check if the article exists
+    require(articles[articleId].timestamp != 0, "Article does not exist");
 
-    function updateArticle(uint256 articleId, string memory newTitle, string memory newContent) public {
-        // Check if the article exists
-        require(articles[articleId].timestamp != 0, "Article does not exist");
+    // Check if the sender is the publisher of the article
+    require(msg.sender == articles[articleId].publisherID, "Only the publisher can update the article");
 
-        // Check if the sender is the publisher of the article
-        require(msg.sender == articles[articleId].publisherID, "Only the publisher can update the article");
+    // Check if the new title and content are not empty
+    require(bytes(newTitle).length > 0, "New title cannot be empty");
+    require(bytes(newContent).length > 0, "New content cannot be empty");
 
-        // Check if the new title and content are not empty
-        require(bytes(newTitle).length > 0, "New title cannot be empty");
-        require(bytes(newContent).length > 0, "New content cannot be empty");
+    // Compute the hash of the new content
+    bytes32 newArticleHash = keccak256(abi.encodePacked(newTitle, newContent));
 
-        // Compute the hash of the new content
-        bytes32 newArticleHash = keccak256(abi.encodePacked(newTitle, newContent));
+    // Update the article
+    articles[articleId].title = newTitle;
+    articles[articleId].content = newContent;
+    articles[articleId].articleHash = bytes32ToString(newArticleHash);
 
-        // Update the article
-        articles[articleId].title = newTitle;
-        articles[articleId].content = newContent;
-        articles[articleId].articleHash = bytes32ToString(newArticleHash);
+    // Add a new version
+    uint256 newVersionNumber = articleVersionCounts[articleId] + 1;
+    articles[articleId].versionHistory[newVersionNumber] = ArticleVersion({
+        versionNumber: newVersionNumber,
+        articleHash: bytes32ToString(newArticleHash),
+        editorID: msg.sender,
+        editTimestamp: block.timestamp,
+        title: newTitle,
+        content: newContent
+    });
 
-        // Add a new version
-        uint256 newVersionNumber = articleVersionCounts[articleId] + 1;
-        articles[articleId].versionHistory[newVersionNumber] = ArticleVersion({
-            versionNumber: newVersionNumber,
-            articleHash: bytes32ToString(newArticleHash),
-            editorID: msg.sender,
-            editTimestamp: block.timestamp,
-            title: newTitle,
-            content: newContent
-        });
+    // Update the version count for the article
+    articleVersionCounts[articleId] = newVersionNumber;
 
-        // Update the version count for the article
-        articleVersionCounts[articleId] = newVersionNumber;
-    }
+    // Update the article in the versionless mapping
+    articleVersionless[articleId] = ArticlewithOutVersion({
+        id: articleId,
+        title: newTitle,
+        content: newContent,
+        timestamp: block.timestamp,
+        publisherID: msg.sender,
+        articleHash: bytes32ToString(newArticleHash)
+    });
+
+    // Emit the ArticleUpdated event AFTER the update is successful
+    emit ArticleUpdated(articleId);
+}
 function getArticleHistory(uint256 articleId) public view returns (ArticleVersion[] memory) {
     // Check if the article exists
     require(articles[articleId].timestamp != 0, "Article does not exist");
@@ -249,38 +273,31 @@ function getArticleHistory(uint256 articleId) public view returns (ArticleVersio
     // Return the versions
     return history;
 }
-function getArticle(uint256 articleId) public view returns (ArticleWithID memory) {
-    require(articleVersionless[articleId].timestamp != 0, "Article does not exist");
-    return ArticleWithID({
-        id: articleId,
-        title: articleVersionless[articleId].title,
-        content: articleVersionless[articleId].content,
-        timestamp: articleVersionless[articleId].timestamp,
-        publisherID: articleVersionless[articleId].publisherID,
-        articleHash: articleVersionless[articleId].articleHash
-    });
-}
-
-function getArticlesByPublisher(address publisherAddress) public view returns (ArticlewithOutVersion[] memory) {
-    require(publishers[publisherAddress].isRegistered, "Publisher not registered");
-
-    uint256[] memory articleIds = publisherArticles[publisherAddress];
-    ArticlewithOutVersion[] memory articlesByPublisher = new ArticlewithOutVersion[](articleIds.length); 
-
-    for (uint256 i = 0; i < articleIds.length; i++) {
-        require(articles[articleIds[i]].timestamp != 0, "Article does not exist");
-        articlesByPublisher[i] = ArticlewithOutVersion({
-            id: articleIds[i],
-            title: articles[articleIds[i]].title,
-            content: articles[articleIds[i]].content,
-            timestamp: articles[articleIds[i]].timestamp,
-            publisherID: articles[articleIds[i]].publisherID,
-            articleHash: articles[articleIds[i]].articleHash
+ function getArticle(uint256 articleId) public view returns (ArticleWithID memory) {
+        require(articleVersionless[articleId].timestamp != 0, "Article does not exist");
+        return ArticleWithID({
+            id: articleId,
+            title: articleVersionless[articleId].title,
+            content: articleVersionless[articleId].content,
+            timestamp: articleVersionless[articleId].timestamp,
+            publisherID: articleVersionless[articleId].publisherID,
+            articleHash: articleVersionless[articleId].articleHash
         });
     }
 
-    return articlesByPublisher;
-}
+ function getArticlesByPublisher(address publisherAddress) public view returns (ArticleWithID[] memory) {
+        require(publishers[publisherAddress].isRegistered, "Publisher not registered");
+
+        uint256[] memory articleIds = publisherArticles[publisherAddress];
+        ArticleWithID[] memory articlesByPublisher = new ArticleWithID[](articleIds.length);
+
+        for (uint256 i = 0; i < articleIds.length; i++) {
+            articlesByPublisher[i] = getArticle(articleIds[i]);
+        }
+
+        return articlesByPublisher;
+    }
+
 
 // Inside your NewsPlatform contract
 mapping(address => uint256[]) public userFavorites; // Maps user addresses to an array of their favorite article IDs
